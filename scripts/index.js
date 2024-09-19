@@ -7,6 +7,7 @@ function createCard (cardData, deleteCard) {
 
   cardElement.querySelector('.card__image').src = cardData.link
   cardElement.querySelector('.card__title').textContent = cardData.name
+  cardElement.querySelector('.card__image').alt = `Локация: ${cardData.name}`
 
   if (cardButton) {
     cardButton.addEventListener('click', deleteCard)
