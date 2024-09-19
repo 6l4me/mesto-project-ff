@@ -1,21 +1,26 @@
 // @todo: Темплейт карточки
 
-function addCard () {
-  for (let i=0; i<initialCards.length; i++) {
-    const addPlaces = document.querySelector('.places__list')
-    const cardTemplate = document.querySelector('#card-template').content
-    const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true)
-    const cardButton = cardElement.querySelector('.card__delete-button')
+function createCard (cardData, deleteCard) {
+  const cardTemplate = document.querySelector('#card-template').content
+  const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true)
+  const cardButton = cardElement.querySelector('.card__delete-button')
 
-    cardElement.querySelector('.card__image').src = initialCards[i].link
-    cardElement.querySelector('.card__title').textContent = initialCards[i].name
+  cardElement.querySelector('.card__image').src = cardData.link
+  cardElement.querySelector('.card__title').textContent = cardData.name
 
-    if (cardButton) {
-      cardButton.addEventListener('click', deleteButton)
-    }
-    
-    addPlaces.append(cardElement)
+  if (cardButton) {
+    cardButton.addEventListener('click', deleteCard)
   }
+
+  return cardElement
+}
+
+function addCard () {
+  const addPlaces = document.querySelector('.places__list')
+  for (let i=0; i< initialCards.length; i++) {
+    addPlaces.append(createCard(initialCards[i], deleteCard))
+  }
+
 }
 
 addCard()
@@ -26,11 +31,10 @@ addCard()
 
 // @todo: Функция удаления карточки
 
-function deleteButton (evt) {
- 
-  const eventTarget = evt.target.closest('.card').remove()
+function deleteCard (evt) {
 
-    
+evt.target.closest('.card').remove()
+
 }
 
 // @todo: Вывести карточки на страницу
