@@ -16,15 +16,13 @@ function createCard (cardData, deleteCard) {
   return cardElement
 }
 
-function addCard () {
+function addCards () {
   const addPlaces = document.querySelector('.places__list')
   for (let i=0; i< initialCards.length; i++) {
     addPlaces.append(createCard(initialCards[i], deleteCard))
   }
 
 }
-
-addCard()
 
 // @todo: DOM узлы
 
@@ -33,9 +31,9 @@ addCard()
 // @todo: Функция удаления карточки
 
 function deleteCard (evt) {
-
-evt.target.closest('.card').remove()
-
+  evt.target.closest('.card').remove()
 }
 
 // @todo: Вывести карточки на страницу
+
+addCards()
