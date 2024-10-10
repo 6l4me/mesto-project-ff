@@ -1,6 +1,9 @@
+import './pages/index.css';
+import initialCards from './cards.js'
+
 // @todo: Темплейт карточки
 
-function createCard (cardData, deleteCard) {
+function createCards (cardData, deleteCard) {
   const cardTemplate = document.querySelector('#card-template').content
   const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true)
   const cardButton = cardElement.querySelector('.card__delete-button')
@@ -19,7 +22,7 @@ function createCard (cardData, deleteCard) {
 function addCards () {
   const addPlaces = document.querySelector('.places__list')
   for (let i=0; i< initialCards.length; i++) {
-    addPlaces.append(createCard(initialCards[i], deleteCard))
+    addPlaces.append(createCards(initialCards[i], deleteCard))
   }
 
 }
