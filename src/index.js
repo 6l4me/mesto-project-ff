@@ -29,12 +29,12 @@ closeAdd.addEventListener('click', function() {
   closePopup(addPopup)
 })
 
-const imageButton = document.querySelector('.places__list')
+const imageButton = document.querySelector('.card__image')
 const imagePopup = document.querySelector('.popup_type_image')
 const closeImage = imagePopup.querySelector('.popup__close')
 const popupCaption = document.querySelector('.popup__caption')
 
-imageButton.addEventListener('click', openImage)
+// imageButton.addEventListener('click', openImage)
 
 closeImage.addEventListener('click', function() {
   closePopup(imagePopup)
@@ -60,35 +60,28 @@ function handleFormSubmit(evt) {
 editPopup.addEventListener('submit', handleFormSubmit);
 
 function handleFormAddCard (evt) {
-  const cardTemplate = document.querySelector('#card-template').content
-  const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true)
-  const cardList = document.querySelector('.places__list')
+  evt.preventDefault()
   const cardNameInput = document.querySelector('.popup__input_type_card-name')
   const urlInput = document.querySelector('.popup__input_type_url')
-  const cardButton = cardElement.querySelector('.card__delete-button')
-  const likeButton = cardElement.querySelector('.card__like-button')
+  const addPlaces = document.querySelector('.places__list')
+  const cardInfo = {
+    name: cardNameInput.value, 
+    link: urlInput.value,
+  }
 
-  evt.preventDefault()
   
-  cardList.prepend(cardElement)
 
-  document.querySelector('.card__image').src = urlInput.value
-  document.querySelector('.card__title').textContent = cardNameInput.value
+  addPlaces.prepend(createCard(cardInfo, deleteCard, likeClick, openImage))
 
-  if (cardButton) {
-    cardButton.addEventListener('click', deleteCard)
-  }
-
-  if (likeButton) {
-    likeButton.addEventListener('click', likeClick)
-  }
-
-  addPopup.classList.add('popup_is-animated')
   addPopup.classList.remove('popup_is-opened')
-  
+  editPopup.classList.add('popup_is-animated')
 
-  urlInput.value = ''
   cardNameInput.value = ''
+  urlInput.value = ''
+
 }
+document.forms['new-place'].addEventListener('submit', handleFormAddCard)
+
+// addPopup.
 
 export {editButton, editPopup, closeEdit, addButton, addPopup, closeAdd, imageButton, imagePopup, closeImage, popupCaption, nameInput, jobInput, handleFormSubmit, handleFormAddCard}

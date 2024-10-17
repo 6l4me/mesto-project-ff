@@ -8,6 +8,7 @@ function createCard (cardData, deleteCard, likeClick, openImage) {
   const cardButton = cardElement.querySelector('.card__delete-button')
   const addPopup = document.querySelector('.popup_type_new-card')
   const likeButton = cardElement.querySelector('.card__like-button')
+  const imageButton = cardElement.querySelector('.card__image')
 
   cardElement.querySelector('.card__image').src = cardData.link
   cardElement.querySelector('.card__title').textContent = cardData.name
@@ -17,11 +18,14 @@ function createCard (cardData, deleteCard, likeClick, openImage) {
     cardButton.addEventListener('click', deleteCard)
   }
 
-  addPopup.addEventListener('submit', handleFormAddCard)
-
   if (likeButton) {
     likeButton.addEventListener('click', likeClick)
   }
+  
+  if (imageButton) {
+    imageButton.addEventListener('click', openImage)
+  }
+  
 
   return cardElement
 }
