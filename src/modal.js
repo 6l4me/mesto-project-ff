@@ -8,6 +8,7 @@ function openPopup (popup) {
 }
 
 function closePopup (popup) {
+  removeEventListener()
   popup.classList.add('popup_is-animated')
   popup.classList.remove('popup_is-opened')
 }
@@ -22,6 +23,12 @@ function closeOverlay (evt) {
   if (evt.target === evt.currentTarget) {
     closePopup(document.querySelector('.popup_is-opened'))
   }
+}
+
+function removeEventListener () {
+  const removeOpenPopup = document.querySelector('.popup_is-opened')
+  document.removeEventListener('keydown', closePopupOnEscape)
+  removeOpenPopup.removeEventListener('click', closeOverlay)
 }
 
 export {openPopup, closePopup, closePopupOnEscape, closeOverlay}
