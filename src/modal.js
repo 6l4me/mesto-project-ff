@@ -1,3 +1,5 @@
+// import resetValidation from './index.js'
+
 function openPopup (popup) {
   popup.classList.add('popup_is-animated')
   popup.classList.add('popup_is-opened')

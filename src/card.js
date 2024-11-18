@@ -1,64 +1,59 @@
-import {initialCards} from './cards.js'
-import {openPopup, closePopup, closePopupOnEscape, closeOverlay} from './modal.js'
+function createCard(cardData, deleteCard, likeClick, openImage, userID, openDeletePopup, likePromise, dislikePromise) {
+  const cardTemplate = document.querySelector('#card-template').content;
+  const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
+  const likeButton = cardElement.querySelector('.card__like-button');
+  const imageButton = cardElement.querySelector('.card__image');
+  const likeNumber = cardElement.querySelector('.card__like-number');
+  const deleteButton = cardElement.querySelector('.card__delete-button');
 
-function createCard (cardData, deleteCard, likeClick, openImage) {
-  const cardTemplate = document.querySelector('#card-template').content
-  const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true)
-  const cardButton = cardElement.querySelector('.card__delete-button')
-  const likeButton = cardElement.querySelector('.card__like-button')
-  const imageButton = cardElement.querySelector('.card__image')
+  cardElement.querySelector('.card__image').src = cardData.link;
+  cardElement.querySelector('.card__title').textContent = cardData.name;
+  cardElement.querySelector('.card__image').alt = `Локация: ${cardData.name}`;
 
-  cardElement.querySelector('.card__image').src = cardData.link
-  cardElement.querySelector('.card__title').textContent = cardData.name
-  cardElement.querySelector('.card__image').alt = `Локация: ${cardData.name}`
-
-  if (cardButton) {
-    cardButton.addEventListener('click', deleteCard)
+  if (userID !== cardData.owner._id) {
+    deleteButton.remove();
   }
 
-  if (likeButton) {
-    likeButton.addEventListener('click', likeClick)
+  const isLiked = cardData.likes.some((like) => like._id === userID);
+  if (isLiked) {
+    likeButton.classList.add('card__like-button_is-active');
+  } else {
+    likeButton.classList.remove('card__like-button_is-active');
   }
-  
-  if (imageButton) {
-    imageButton.addEventListener('click', openImage)
-  }
-  
 
-  return cardElement
+  likeNumber.textContent = cardData.likes.length;
+
+  deleteButton.addEventListener('click', () => {
+    openDeletePopup(cardData._id, cardElement);
+  });
+
+  likeButton.addEventListener('click', function () {
+    const isLiked = likeButton.classList.contains('card__like-button_is-active');
+
+    if (isLiked) {
+      likeButton.classList.remove('card__like-button_is-active');
+      cardData.likes.length -= 1;
+    } else {
+      likeButton.classList.add('card__like-button_is-active');
+      cardData.likes.length += 1;
+    }
+    likeNumber.textContent = cardData.likes.length;
+
+    const promise = isLiked ? dislikePromise(cardData._id) : likePromise(cardData._id);
+    promise
+      .then((updatedCard) => {
+        cardData.likes.length = updatedCard.likes.length;
+        likeNumber.textContent = updatedCard.likes.length;
+      })
+  });
+
+  return cardElement;
 }
 
-// function addCards () {
-//   const addPlaces = document.querySelector('.places__list')
-//   for (let i=0; i< initialCards.length; i++) {
-//     addPlaces.append(createCard(initialCards[i], deleteCard, likeClick, openImage))
-//   }
-// }
 
 function deleteCard (evt) {
   evt.target.closest('.card').remove()
 }
-
-// addCards()
-
-// function openImage (evt) {
-//   openPopup(imagePopup)
-//   const imageTarget = evt.target.closest('.card__image')
-//   if (imageTarget) {
-//     const cardElement = imageTarget.closest('.places__item');
-//     const popupImage = document.querySelector('.popup__image')
-
-//     popupImage.src = imageTarget.src
-
-//     popupCaption.textContent = cardElement.querySelector('.card__title').textContent;
-// }
-// }
-
-// imageButton.addEventListener('click', openImage)
-
-// closeImage.addEventListener('click', function() {
-//   closePopup(imagePopup)
-// })
 
 function likeClick (evt) {
   evt.target.classList.add('card__like-button_is-active')
