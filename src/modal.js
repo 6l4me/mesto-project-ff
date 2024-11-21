@@ -1,7 +1,6 @@
 // import resetValidation from './index.js'
 
 function openPopup (popup) {
-  popup.classList.add('popup_is-animated')
   popup.classList.add('popup_is-opened')
 
   document.addEventListener('keydown', closePopupOnEscape)
@@ -9,10 +8,9 @@ function openPopup (popup) {
   popup.addEventListener('click', closeOverlay)
 }
 
-function closePopup (popup) {
-  removeEventListener()
-  popup.classList.add('popup_is-animated')
-  popup.classList.remove('popup_is-opened')
+function closePopup (popup) { 
+  removeEventListeners(popup) 
+  popup.classList.remove('popup_is-opened') 
 }
 
 function closePopupOnEscape (evt) {
@@ -27,10 +25,9 @@ function closeOverlay (evt) {
   }
 }
 
-function removeEventListener () {
-  const removeOpenPopup = document.querySelector('.popup_is-opened')
-  document.removeEventListener('keydown', closePopupOnEscape)
-  removeOpenPopup.removeEventListener('click', closeOverlay)
+function removeEventListeners (popup) { 
+  document.removeEventListener('keydown', closePopupOnEscape) 
+  popup.removeEventListener('click', closeOverlay) 
 }
 
 export {openPopup, closePopup, closePopupOnEscape, closeOverlay}

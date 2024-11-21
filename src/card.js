@@ -21,6 +21,10 @@ function createCard(cardData, deleteCard, likeClick, openImage, userID, openDele
     likeButton.classList.remove('card__like-button_is-active');
   }
 
+  if (imageButton) {
+    imageButton.addEventListener('click', openImage)
+  }
+
   likeNumber.textContent = cardData.likes.length;
 
   deleteButton.addEventListener('click', () => {
@@ -30,20 +34,23 @@ function createCard(cardData, deleteCard, likeClick, openImage, userID, openDele
   likeButton.addEventListener('click', function () {
     const isLiked = likeButton.classList.contains('card__like-button_is-active');
 
-    if (isLiked) {
-      likeButton.classList.remove('card__like-button_is-active');
-      cardData.likes.length -= 1;
-    } else {
-      likeButton.classList.add('card__like-button_is-active');
-      cardData.likes.length += 1;
-    }
+    
     likeNumber.textContent = cardData.likes.length;
 
     const promise = isLiked ? dislikePromise(cardData._id) : likePromise(cardData._id);
     promise
       .then((updatedCard) => {
+        if (isLiked) {
+          likeButton.classList.remove('card__like-button_is-active');
+          cardData.likes.length -= 1;
+        } else {
+          likeButton.classList.add('card__like-button_is-active');
+          cardData.likes.length += 1;
+        }
+
         cardData.likes.length = updatedCard.likes.length;
         likeNumber.textContent = updatedCard.likes.length;
+        
       })
   });
 

@@ -1,64 +1,62 @@
-const form = document.querySelector('.popup__form')
-const formInput = form.querySelector('.popup__input')
+// const form = document.querySelector('.popup__form')
+// const formInput = form.querySelector('.popup__input')
 
-const showError = (formElement, input, errorMessage) => {
+const showError = (formElement, input, errorMessage, settings) => {
   const errorElement = formElement.querySelector(`.${input.id}-error`)
-  input.classList.add('form__input_type_error')
+  input.classList.add(settings.inputErrorClass)
   errorElement.textContent = errorMessage
-  errorElement.classList.add('form__input_type_error_active')
+  errorElement.classList.add(settings.errorClass)
 }
 
-const hideError = (formElement, input) => {
+const hideError = (formElement, input, settings) => {
   const errorElement = formElement.querySelector(`.${input.id}-error`)
-  input.classList.remove('form__input_type_error')
-  errorElement.classList.remove('form__input_type_error_active')
+  input.classList.remove(settings.inputErrorClass)
+  errorElement.classList.remove(settings.errorClass)
   errorElement.textContent = ''
 }
 
-function checkInputValidity (formElement, inputElement) {
-  if (inputElement.value === '') {
-    inputElement.setCustomValidity('Вы пропустили это поле.')
-  } else if (inputElement.value.length === 1) {
-    inputElement.setCustomValidity(`Минимальное количество символов: 2. Длина текста сейчас ${inputElement.value.length} символ.`)
-  } else if (inputElement.validity.patternMismatch) {
-    inputElement.setCustomValidity(inputElement.dataset.errorMessage);
-  } else if (inputElement.validity.typeMismatch && !inputElement.checkValidity()) {
-    inputElement.setCustomValidity('Введите адрес сайта.')
-  } else {
-    inputElement.setCustomValidity("");
-  } 
+function checkInputValidity (formElement, inputElement, settings) {
+  if (inputElement.value === '') { 
+    inputElement.setCustomValidity('Вы пропустили это поле.') 
+  // } else if (inputElement.validationMessage) { 
+  //   inputElement.setCustomValidity(`Минимальное количество символов: 2. Длина текста сейчас ${inputElement.value.length} символ.`) 
+  } else if (inputElement.validity.patternMismatch) { 
+    inputElement.setCustomValidity(inputElement.dataset.errorMessage); 
+  } else if (inputElement.validity.typeMismatch && !inputElement.checkValidity()) { 
+    inputElement.setCustomValidity('Введите адрес сайта.') 
+  } else { 
+    inputElement.setCustomValidity(""); 
+  }  
+
 
   if (!inputElement.validity.valid) {
-    showError(formElement, inputElement, inputElement.validationMessage)
+    showError(formElement, inputElement, inputElement.validationMessage, settings)
   } else {
-    hideError(formElement, inputElement)
+    hideError(formElement, inputElement, settings)
   }
 }
 
-formInput.addEventListener('input', function () {
-  checkInputValidity(form, formInput)
-})
+// formInput.addEventListener('input', function () {
+//   checkInputValidity(form, formInput)
+// })
 
-function setEventListener (formElement) {
-  const inputList = Array.from(formElement.querySelectorAll('.popup__input'))
-  const buttonElement = formElement.querySelector('.popup__button')
-  // toggleButtonState(inputList, buttonElement)
+function setEventListener (formElement, settings) {
+  const inputList = Array.from(formElement.querySelectorAll(settings.inputSelector))
+  const buttonElement = formElement.querySelector(settings.submitButtonSelector)
+  toggleButtonState(inputList, buttonElement, settings)
   inputList.forEach((inputElement) => {
     inputElement.addEventListener('input', function () {
-      checkInputValidity(formElement, inputElement)
-      toggleButtonState(inputList, buttonElement)
+      checkInputValidity(formElement, inputElement, settings)
+      toggleButtonState(inputList, buttonElement, settings)
     })
   })
 }
 
-function enableValidation () {
-  const formList = Array.from(document.querySelectorAll('.popup__form'))
+function enableValidation (settings) {
+  const formList = Array.from(document.querySelectorAll(settings.formSelector))
 
   formList.forEach((formElement) => {
-    formElement.addEventListener('submit', (evt) => {
-      evt.preventDefault()
-    })
-    setEventListener(formElement)
+    setEventListener(formElement, settings)
   })
 }
 
@@ -68,12 +66,23 @@ function hasInvalidInput (inputList) {
   })
 }
 
-function toggleButtonState (inputList, buttonElement) {
+function toggleButtonState (inputList, buttonElement, settings) {
   if (hasInvalidInput(inputList)) {
-    buttonElement.classList.add('button_inactive')
+    buttonElement.classList.add(settings.inactiveButtonClass)
+    buttonElement.disabled = true;
   } else {
-    buttonElement.classList.remove('button_inactive')
+    buttonElement.classList.remove(settings.inactiveButtonClass)
+    buttonElement.disabled = false;
   }
 }
 
-export {showError, hideError, checkInputValidity, setEventListener, enableValidation, hasInvalidInput, toggleButtonState}
+function clearValidation(formElement, settings) {
+  const inputList = Array.from(formElement.querySelectorAll(settings.inputSelector));
+  
+  inputList.forEach((inputElement) => {
+    hideError(formElement, inputElement, settings);
+  });
+  
+}
+
+export {showError, hideError, checkInputValidity, setEventListener, enableValidation, hasInvalidInput, toggleButtonState, clearValidation}

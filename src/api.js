@@ -1,114 +1,74 @@
-import { createCard, deleteCard, likeClick } from "./card.js";
-import {nameAuthor, aboutAuthor, nameInput, descriptionInput, avatarUrl, profileImage} from './index.js'
+const config = {
+  baseUrl: "https://mesto.nomoreparties.co/v1/wff-cohort-25",
+  headers: {
+    authorization: "363c28ba-378d-466a-b536-c9d6e75fceb3",
+    "Content-Type": "application/json",
+  },
+};
 
-const userData = fetch(
-  "https://mesto.nomoreparties.co/v1/wff-cohort-25/users/me",
-  {
-    headers: {
-      authorization: "363c28ba-378d-466a-b536-c9d6e75fceb3",
-    },
+function checkResponse(res) {
+  if (res.ok) {
+    return res.json();
   }
-).then((res) => res.json());
+  return res.json().then((err) => {
+    throw new Error(err.message || "Ошибка сервера");
+  });
+}
 
-const cardData = fetch(
-  "https://mesto.nomoreparties.co/v1/wff-cohort-25/cards",
-  {
-    headers: {
-      authorization: "363c28ba-378d-466a-b536-c9d6e75fceb3",
-    },
-  }
-).then((res) => res.json());
+const userData = fetch(`${config.baseUrl}/users/me`, {
+  headers: config.headers,
+}).then(checkResponse);
 
-function updateUserData() {
-  return fetch("https://mesto.nomoreparties.co/v1/wff-cohort-25/users/me", {
+const cardData = fetch(`${config.baseUrl}/cards`, {
+  headers: config.headers,
+}).then(checkResponse);
+
+function updateUserData(name, about) {
+  return fetch(`${config.baseUrl}/users/me`, {
     method: "PATCH",
-    headers: {
-      authorization: "363c28ba-378d-466a-b536-c9d6e75fceb3",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name: nameInput.value,
-      about: descriptionInput.value,
-    }),
-  })
-    .then((res) => res.json())
-    .then((result) => {
-      nameAuthor.textContent = result.name;
-      aboutAuthor.textContent = result.about;
-    });
+    headers: config.headers,
+    body: JSON.stringify({ name, about }),
+  }).then(checkResponse);
 }
 
 function postNewPlace(newInfo) {
-  return fetch("https://mesto.nomoreparties.co/v1/wff-cohort-25/cards", {
+  return fetch(`${config.baseUrl}/cards`, {
     method: "POST",
-    headers: {
-      authorization: "363c28ba-378d-466a-b536-c9d6e75fceb3",
-      "Content-Type": "application/json",
-    },
+    headers: config.headers,
     body: JSON.stringify({
       name: newInfo.name,
       link: newInfo.link,
     }),
-  }).then((res) => res.json());
+  }).then(checkResponse);
 }
 
 function deleteCardPromise(cardId) {
-  return fetch(
-    `https://mesto.nomoreparties.co/v1/wff-cohort-25/cards/${cardId}`,
-    {
-      method: "DELETE",
-      headers: {
-        authorization: "363c28ba-378d-466a-b536-c9d6e75fceb3",
-        "Content-Type": "application/json",
-      },
-    }
-  ).then((res) => res.json());
+  return fetch(`${config.baseUrl}/cards/${cardId}`, {
+    method: "DELETE",
+    headers: config.headers,
+  }).then(checkResponse);
 }
 
 function likePromise(cardId) {
-  return fetch(
-    `https://mesto.nomoreparties.co/v1/wff-cohort-25/cards/likes/${cardId}`,
-    {
-      method: "PUT",
-      headers: {
-        authorization: "363c28ba-378d-466a-b536-c9d6e75fceb3",
-        "Content-Type": "application/json",
-      },
-    }
-  ).then((res) => res.json());
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+    method: "PUT",
+    headers: config.headers,
+  }).then(checkResponse);
 }
 
 function dislikePromise(cardId) {
-  return fetch(
-    `https://mesto.nomoreparties.co/v1/wff-cohort-25/cards/likes/${cardId}`,
-    {
-      method: "DELETE",
-      headers: {
-        authorization: "363c28ba-378d-466a-b536-c9d6e75fceb3",
-        "Content-Type": "application/json",
-      },
-    }
-  ).then((res) => res.json());
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+    method: "DELETE",
+    headers: config.headers,
+  }).then(checkResponse);
 }
 
-function updateAvatar() {
-  return fetch(
-    "https://mesto.nomoreparties.co/v1/wff-cohort-25/users/me/avatar",
-    {
-      method: "PATCH",
-      headers: {
-        authorization: "363c28ba-378d-466a-b536-c9d6e75fceb3",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        avatar: avatarUrl.value,
-      }),
-    }
-  )
-    .then((res) => res.json())
-    .then((result) => {
-      profileImage.style.backgroundImage = `url(${result.avatar})`;
-    });
+function updateAvatar(avatarUrl) {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: "PATCH",
+    headers: config.headers,
+    body: JSON.stringify({ avatar: avatarUrl }),
+  }).then(checkResponse);
 }
 
 export { userData, cardData, updateUserData, postNewPlace, deleteCardPromise, likePromise, dislikePromise, updateAvatar };
