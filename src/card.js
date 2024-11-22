@@ -42,10 +42,8 @@ function createCard(cardData, deleteCard, likeClick, openImage, userID, openDele
       .then((updatedCard) => {
         if (isLiked) {
           likeButton.classList.remove('card__like-button_is-active');
-          cardData.likes.length -= 1;
         } else {
           likeButton.classList.add('card__like-button_is-active');
-          cardData.likes.length += 1;
         }
 
         cardData.likes.length = updatedCard.likes.length;

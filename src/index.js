@@ -10,31 +10,39 @@ const closeEdit = editPopup.querySelector('.popup__close')
 const editForm = editPopup.querySelector('.popup__form')
 const nameInput = document.querySelector('.popup__input_type_name')
 const jobInput = editPopup.querySelector('.popup__input_type_description')
+const aboutAuthor = document.querySelector('.profile__description')
+const nameAuthor = document.querySelector('.profile__title')
+const editResetButton = editPopup.querySelector('.popup__button')
 
 editButton.addEventListener('click', function () {  
 
-  nameInput.value = document.querySelector('.profile__title').textContent
-  jobInput.value = document.querySelector('.profile__description').textContent
+  nameInput.value = nameAuthor.textContent
+  jobInput.value = aboutAuthor.textContent
 
   clearValidation(editPopup, enableValidation)
   openPopup(editPopup)
+  editResetButton.classList.remove('popup__button_disabled')
 })
 
 closeEdit.addEventListener('click', function () {
   closePopup(editPopup)
+  // disableButton(editResetButton, enableValidation)
 })
 
 const addButton = document.querySelector('.profile__add-button')
 const addPopup = document.querySelector('.popup_type_new-card')
 const closeAdd = addPopup.querySelector('.popup__close')
 const addForm = addPopup.querySelector('.popup__form')
+const addResetButton = addPopup.querySelector('.popup__button')
 
 addButton.addEventListener('click', function() {
+  clearValidation(editPopup, enableValidation)
   openPopup(addPopup)
 })
 
 closeAdd.addEventListener('click', function() {
   closePopup(addPopup)
+  // disableButton(addResetButton, enableValidation)
 })
 
 const imageButton = document.querySelector('.card__image')
@@ -53,8 +61,8 @@ function handleFormEditCard(evt) {
 
     handleSaveButton(submitButton, true);
 
-    document.querySelector('.profile__title').textContent = nameInput.value
-    document.querySelector('.profile__description').textContent = jobInput.value
+    // nameAuthor.textContent = nameInput.value
+    // aboutAuthor.textContent = jobInput.value
     
     
     updateUserData(nameInput.value, jobInput.value)
@@ -87,7 +95,7 @@ function handleFormAddCard (evt) {
     addPlaces.prepend(createCard(result, deleteCard, likeClick, openImage, userID, openDeletePopup, likePromise, dislikePromise));
 
     closePopup(addPopup);
-
+    addResetButton.classList.add('popup__button_disabled')
     cardNameInput.value = '';
     urlInput.value = '';
   })
@@ -131,11 +139,9 @@ enableValidation({
   errorClass: 'form__input-error'
 });
 
-const nameAuthor = document.querySelector('.profile__title')
-const aboutAuthor = document.querySelector('.profile__description')
 const avatarAuthor = document.querySelector('.profile__image')
-const cardNameInput = document.querySelector('.popup__input_type_card-name')
-const urlInput = document.querySelector('.popup__input_type_url')
+// const cardNameInput = document.querySelector('.popup__input_type_card-name')
+// const urlInput = document.querySelector('.popup__input_type_url')
 
 let userID
 
@@ -201,13 +207,16 @@ const avatarPopup = document.querySelector('.popup_type_avatar')
 const closeAvatar = avatarPopup.querySelector('.popup__close')
 const avatarUrl = avatarPopup.querySelector('.popup__input_avatar')
 const avatarForm = avatarPopup.querySelector('.popup__form');
+const avatarResetButton = avatarPopup.querySelector('.popup__button')
 
 profileImage.addEventListener('click', function (){
+  clearValidation(avatarPopup, enableValidation)
   openPopup(avatarPopup)
 })
 
 closeAvatar.addEventListener('click', function() {
   closePopup(avatarPopup)
+  // disableButton(avatarResetButton, enableValidation)
 })
 
 
@@ -222,12 +231,13 @@ function closeAvatarPopup(evt) {
     .then((userData) => {
       profileImage.style.backgroundImage = `url(${userData.avatar})`;
       closePopup(avatarPopup);
+      avatarResetButton.classList.add('popup__button_disabled')
       avatarForm.reset();
     })
     .catch((err) => console.log('Ошибка обновления аватара:', err))
     .finally(() => { 
       handleSaveButton(submitButton, false)
-      clearValidation(avatarPopup, enableValidation)
+      
     });
 } 
 

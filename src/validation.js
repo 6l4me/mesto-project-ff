@@ -1,6 +1,3 @@
-// const form = document.querySelector('.popup__form')
-// const formInput = form.querySelector('.popup__input')
-
 const showError = (formElement, input, errorMessage, settings) => {
   const errorElement = formElement.querySelector(`.${input.id}-error`)
   input.classList.add(settings.inputErrorClass)
@@ -16,16 +13,10 @@ const hideError = (formElement, input, settings) => {
 }
 
 function checkInputValidity (formElement, inputElement, settings) {
-  if (inputElement.value === '') { 
-    inputElement.setCustomValidity('Вы пропустили это поле.') 
-  // } else if (inputElement.validationMessage) { 
-  //   inputElement.setCustomValidity(`Минимальное количество символов: 2. Длина текста сейчас ${inputElement.value.length} символ.`) 
-  } else if (inputElement.validity.patternMismatch) { 
+  if (inputElement.validity.patternMismatch) { 
     inputElement.setCustomValidity(inputElement.dataset.errorMessage); 
-  } else if (inputElement.validity.typeMismatch && !inputElement.checkValidity()) { 
-    inputElement.setCustomValidity('Введите адрес сайта.') 
   } else { 
-    inputElement.setCustomValidity(""); 
+    inputElement.setCustomValidity('');
   }  
 
 
@@ -68,11 +59,11 @@ function hasInvalidInput (inputList) {
 
 function toggleButtonState (inputList, buttonElement, settings) {
   if (hasInvalidInput(inputList)) {
-    buttonElement.classList.add(settings.inactiveButtonClass)
     buttonElement.disabled = true;
+    buttonElement.classList.add(settings.inactiveButtonClass)
   } else {
-    buttonElement.classList.remove(settings.inactiveButtonClass)
     buttonElement.disabled = false;
+    buttonElement.classList.remove(settings.inactiveButtonClass)
   }
 }
 
@@ -84,5 +75,10 @@ function clearValidation(formElement, settings) {
   });
   
 }
+
+// function disableButton(buttonElement, settings) {
+//   buttonElement.disabled = true; 
+//   buttonElement.classList.add(settings.inactiveButtonClass);
+// }
 
 export {showError, hideError, checkInputValidity, setEventListener, enableValidation, hasInvalidInput, toggleButtonState, clearValidation}
