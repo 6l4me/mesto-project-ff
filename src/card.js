@@ -34,9 +34,6 @@ function createCard(cardData, deleteCard, likeClick, openImage, userID, openDele
   likeButton.addEventListener('click', function () {
     const isLiked = likeButton.classList.contains('card__like-button_is-active');
 
-    
-    likeNumber.textContent = cardData.likes.length;
-
     const promise = isLiked ? dislikePromise(cardData._id) : likePromise(cardData._id);
     promise
       .then((updatedCard) => {
@@ -46,7 +43,6 @@ function createCard(cardData, deleteCard, likeClick, openImage, userID, openDele
           likeButton.classList.add('card__like-button_is-active');
         }
 
-        cardData.likes.length = updatedCard.likes.length;
         likeNumber.textContent = updatedCard.likes.length;
         
       })

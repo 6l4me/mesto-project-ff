@@ -27,10 +27,6 @@ function checkInputValidity (formElement, inputElement, settings) {
   }
 }
 
-// formInput.addEventListener('input', function () {
-//   checkInputValidity(form, formInput)
-// })
-
 function setEventListener (formElement, settings) {
   const inputList = Array.from(formElement.querySelectorAll(settings.inputSelector))
   const buttonElement = formElement.querySelector(settings.submitButtonSelector)
@@ -76,9 +72,10 @@ function clearValidation(formElement, settings) {
   
 }
 
-// function disableButton(buttonElement, settings) {
-//   buttonElement.disabled = true; 
-//   buttonElement.classList.add(settings.inactiveButtonClass);
-// }
+function disableButton(buttonElement, settings) {
+  buttonElement.disabled = true; 
+  buttonElement.classList.add(settings.inactiveButtonClass);
+  console.log(buttonElement)
+}
 
-export {showError, hideError, checkInputValidity, setEventListener, enableValidation, hasInvalidInput, toggleButtonState, clearValidation}
+export {showError, hideError, checkInputValidity, setEventListener, enableValidation, hasInvalidInput, toggleButtonState, clearValidation, disableButton}

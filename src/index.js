@@ -1,101 +1,117 @@
 import './pages/index.css';
 import {openPopup, closePopup, closePopupOnEscape, closeOverlay} from './modal.js'
 import {createCard, deleteCard, likeClick} from './card.js'
-import {showError, hideError, checkInputValidity, setEventListener, enableValidation, hasInvalidInput, toggleButtonState, clearValidation} from './validation.js'
+import {showError, hideError, checkInputValidity, setEventListener, enableValidation, hasInvalidInput, toggleButtonState, clearValidation, disableButton} from './validation.js'
 import { userData, cardData, updateUserData, postNewPlace, deleteCardPromise, likePromise, dislikePromise, updateAvatar } from './api.js'
 
 const editButton = document.querySelector('.profile__edit-button')
 const editPopup = document.querySelector('.popup_type_edit')
-const closeEdit = editPopup.querySelector('.popup__close')
-const editForm = editPopup.querySelector('.popup__form')
+const closeEdit = getCloseButton(editPopup)
+const editForm = getForm(editPopup)
 const nameInput = document.querySelector('.popup__input_type_name')
 const jobInput = editPopup.querySelector('.popup__input_type_description')
 const aboutAuthor = document.querySelector('.profile__description')
 const nameAuthor = document.querySelector('.profile__title')
-const editResetButton = editPopup.querySelector('.popup__button')
+const addPlaces = document.querySelector('.places__list')
+const profileImage = document.querySelector('.profile__image')
+const editResetButton = getSubmitButton(editPopup)
+const settings = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'form__input_type_error',
+  errorClass: 'form__input-error'
+};
+
+function getSubmitButton(form) {
+  return form.querySelector('.popup__button');
+}
+
+function getCloseButton(popup) {
+  return popup.querySelector('.popup__close');
+}
+
+function getForm (form) {
+  return form.querySelector('.popup__form')
+}
 
 editButton.addEventListener('click', function () {  
 
   nameInput.value = nameAuthor.textContent
   jobInput.value = aboutAuthor.textContent
 
-  clearValidation(editPopup, enableValidation)
+  clearValidation(editForm, settings)
   openPopup(editPopup)
-  editResetButton.classList.remove('popup__button_disabled')
 })
 
 closeEdit.addEventListener('click', function () {
   closePopup(editPopup)
-  // disableButton(editResetButton, enableValidation)
+  
 })
 
 const addButton = document.querySelector('.profile__add-button')
 const addPopup = document.querySelector('.popup_type_new-card')
-const closeAdd = addPopup.querySelector('.popup__close')
-const addForm = addPopup.querySelector('.popup__form')
-const addResetButton = addPopup.querySelector('.popup__button')
+const closeAdd = getCloseButton(addPopup)
+const addForm = getForm(addPopup)
+const addResetButton = getSubmitButton(addPopup)
 
 addButton.addEventListener('click', function() {
-  clearValidation(editPopup, enableValidation)
+  clearValidation(editPopup, settings)
   openPopup(addPopup)
 })
 
 closeAdd.addEventListener('click', function() {
   closePopup(addPopup)
-  // disableButton(addResetButton, enableValidation)
 })
 
-const imageButton = document.querySelector('.card__image')
 const imagePopup = document.querySelector('.popup_type_image')
-const closeImage = imagePopup.querySelector('.popup__close')
+const closeImage = getCloseButton(imagePopup)
 const popupCaption = document.querySelector('.popup__caption')
 
 closeImage.addEventListener('click', function() {
   closePopup(imagePopup)
 })
 
+const editSubmitButton = getSubmitButton(editForm);
+
 function handleFormEditCard(evt) {
     evt.preventDefault(); 
 
-    const submitButton = editForm.querySelector('.popup__button');
-
-    handleSaveButton(submitButton, true);
-
-    // nameAuthor.textContent = nameInput.value
-    // aboutAuthor.textContent = jobInput.value
-    
+    handleSaveButton(editSubmitButton, true);
     
     updateUserData(nameInput.value, jobInput.value)
-    .then(() => {
-      nameAuthor.textContent = nameInput.value;
-      aboutAuthor.textContent = jobInput.value;
+    .then((res) => {
+      nameAuthor.textContent = res.name;
+      aboutAuthor.textContent = res.about;
       closePopup(editPopup);
+      disableButton(editResetButton, settings)
     })
     .catch((err) => console.log('Ошибка обновления профиля:', err))
-    .finally(() => handleSaveButton(submitButton, false));
+    .finally(() => handleSaveButton(editSubmitButton, false));
 }
 
 editPopup.addEventListener('submit', handleFormEditCard);
 
+const cardNameInput = document.querySelector('.popup__input_type_card-name')
+const urlInput = document.querySelector('.popup__input_type_url')
+const addSubmitButton = getSubmitButton(addForm);
+
 function handleFormAddCard (evt) {
   evt.preventDefault()
-  const cardNameInput = document.querySelector('.popup__input_type_card-name')
-  const urlInput = document.querySelector('.popup__input_type_url')
-  const addPlaces = document.querySelector('.places__list');
-  const submitButton = addForm.querySelector('.popup__button');
   const cardInfo = {
     name: cardNameInput.value, 
     link: urlInput.value,
   }
 
-  handleSaveButton(submitButton, true);
+  handleSaveButton(addSubmitButton, true);
 
   postNewPlace(cardInfo)
   .then((result) => { 
     addPlaces.prepend(createCard(result, deleteCard, likeClick, openImage, userID, openDeletePopup, likePromise, dislikePromise));
 
     closePopup(addPopup);
-    addResetButton.classList.add('popup__button_disabled')
+    disableButton(addResetButton, settings)
     cardNameInput.value = '';
     urlInput.value = '';
   })
@@ -103,7 +119,7 @@ function handleFormAddCard (evt) {
     console.log('Ошибка. Запрос не выполнен: ', err);
   })
   .finally(() => {
-    handleSaveButton(submitButton, false);
+    handleSaveButton(addSubmitButton, false);
   })
 
 }
@@ -111,18 +127,19 @@ function handleFormAddCard (evt) {
 document.forms['new-place'].addEventListener('submit', handleFormAddCard)
 
 function addCards (data) {
-  const addPlaces = document.querySelector('.places__list')
+  
   for (let i=0; i< data.length; i++) {
     addPlaces.append(createCard(data[i], deleteCard, likeClick, openImage, userID, openDeletePopup, likePromise, dislikePromise))
   }
 }
+
+const popupImage = document.querySelector('.popup__image')
 
 function openImage (evt) {
   openPopup(imagePopup)
   const imageTarget = evt.target.closest('.card__image')
   if (imageTarget) {
     const cardElement = imageTarget.closest('.places__item');
-    const popupImage = document.querySelector('.popup__image')
 
     popupImage.src = imageTarget.src
 
@@ -130,18 +147,8 @@ function openImage (evt) {
   }
 }
 
-enableValidation({
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.popup__button',
-  inactiveButtonClass: 'popup__button_disabled',
-  inputErrorClass: 'form__input_type_error',
-  errorClass: 'form__input-error'
-});
+enableValidation(settings);
 
-const avatarAuthor = document.querySelector('.profile__image')
-// const cardNameInput = document.querySelector('.popup__input_type_card-name')
-// const urlInput = document.querySelector('.popup__input_type_url')
 
 let userID
 
@@ -152,13 +159,13 @@ Promise.all(promises)
     
     nameAuthor.textContent = result[0].name
     aboutAuthor.textContent = result[0].about
-    avatarAuthor.style.backgroundImage = `url(${result[0].avatar})`
+    profileImage.style.backgroundImage = `url(${result[0].avatar})`
 
     userID = result[0]._id
     
     result[1].map((cardData) => {
       const cardElement = createCard(cardData, deleteCard, likeClick, openImage, userID, openDeletePopup, likePromise, dislikePromise);
-      document.querySelector('.places__list').insertAdjacentElement('beforeend', cardElement);
+      addPlaces.insertAdjacentElement('beforeend', cardElement);
     });
     
   })
@@ -167,7 +174,7 @@ Promise.all(promises)
   })
 
 const deletePopup = document.querySelector('.popup_type_delete')
-const closeDelete = deletePopup.querySelector('.popup__close')
+const closeDelete = getCloseButton(deletePopup)
 
 closeDelete.addEventListener('click', function () {
   closePopup(deletePopup)
@@ -200,43 +207,38 @@ function closeDeletePopup(evt) {
 
 deletePopup.addEventListener('submit', closeDeletePopup)
 
-
-
-const profileImage = document.querySelector('.profile__image')
 const avatarPopup = document.querySelector('.popup_type_avatar')
-const closeAvatar = avatarPopup.querySelector('.popup__close')
+const closeAvatar = getCloseButton(avatarPopup)
 const avatarUrl = avatarPopup.querySelector('.popup__input_avatar')
-const avatarForm = avatarPopup.querySelector('.popup__form');
-const avatarResetButton = avatarPopup.querySelector('.popup__button')
+const avatarForm = getForm(avatarPopup)
+const avatarResetButton = getSubmitButton(avatarPopup)
 
 profileImage.addEventListener('click', function (){
-  clearValidation(avatarPopup, enableValidation)
+  clearValidation(avatarPopup, settings)
   openPopup(avatarPopup)
 })
 
 closeAvatar.addEventListener('click', function() {
   closePopup(avatarPopup)
-  // disableButton(avatarResetButton, enableValidation)
 })
 
+const avatarSubmitButton = getSubmitButton(avatarForm);
 
 function closeAvatarPopup(evt) {
   evt.preventDefault();
 
-  const submitButton = avatarForm.querySelector('.popup__button');
-  
-  handleSaveButton(submitButton, true);
+  handleSaveButton(avatarSubmitButton, true);
 
   updateAvatar(avatarUrl.value)
     .then((userData) => {
       profileImage.style.backgroundImage = `url(${userData.avatar})`;
       closePopup(avatarPopup);
-      avatarResetButton.classList.add('popup__button_disabled')
+      disableButton(avatarResetButton, settings)
       avatarForm.reset();
     })
     .catch((err) => console.log('Ошибка обновления аватара:', err))
     .finally(() => { 
-      handleSaveButton(submitButton, false)
+      handleSaveButton(avatarSubmitButton, false)
       
     });
 } 
@@ -245,10 +247,8 @@ avatarForm.addEventListener('submit', closeAvatarPopup);
 
 function handleSaveButton(button, isSaving) {
   if (isSaving) {
-    button.disabled = true;
     button.textContent = 'Сохранение...';
   } else {
-    button.disabled = false;
     button.textContent = 'Сохранить';
   }
 }
