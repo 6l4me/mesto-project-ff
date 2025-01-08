@@ -138,13 +138,13 @@ const popupImage = document.querySelector('.popup__image')
 function openImage (evt) {
   openPopup(imagePopup)
   const imageTarget = evt.target.closest('.card__image')
-  if (imageTarget) {
+  // if (imageTarget) {
     const cardElement = imageTarget.closest('.places__item');
 
     popupImage.src = imageTarget.src
 
     popupCaption.textContent = cardElement.querySelector('.card__title').textContent;
-  }
+  // }
 }
 
 enableValidation(settings);
